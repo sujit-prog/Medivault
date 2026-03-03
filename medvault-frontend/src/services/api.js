@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: "https://medivault-lp09.onrender.com/api",
 });
 
 // Attach JWT automatically
