@@ -1,12 +1,7 @@
 {
-    "$schema": "https://railway.app/railway.schema.json",
     "build": {
-        "builder": "DOCKERFILE",
+        "rootDirectory": "medvault-backend",
         "dockerfilePath": "medvault-backend/Dockerfile"
     },
-    "deploy": {
-        "startCommand": "cd medvault-backend && java -jar target/*.jar",
-        "restartPolicyType": "ON_FAILURE",
-        "restartPolicyMaxRetries": 10
-    }
+    "startCommand": "./start.sh"
 }
