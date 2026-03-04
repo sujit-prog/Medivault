@@ -1,7 +1,7 @@
 {
     "build": {
         "rootDirectory": "medvault-backend",
-        "dockerfilePath": "medvault-backend/Dockerfile"
+        "dockerfilePath": "Dockerfile"
     },
     "startCommand": "./start.sh"
 }
