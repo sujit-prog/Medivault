@@ -19,7 +19,7 @@ import {
  * I've included it here to fix the "Could not resolve" error in the preview.
  */
 const API = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: "https://medivault-production.up.railway.app/api",
 });
 
 API.interceptors.request.use((req) => {
@@ -80,7 +80,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans text-slate-900">
-      <div className="w-full max-w-[400px]">
+      <div className="w-full max-w-100">
         {/* Simple Branding Header */}
         <div className="text-center mb-8">
           <button onClick={() => navigate('/')} className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-teal-600 hover:bg-teal-700 text-white mb-4 shadow-lg shadow-teal-100 transition-colors">

@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 const API = axios.create({
-    baseURL: "http://localhost:8080/api",
+    baseURL: "https://medivault-production.up.railway.app/api",
 });
 
 export default function Register() {
@@ -74,7 +74,7 @@ export default function Register() {
                     <span className="font-bold text-sm text-slate-700 tracking-tight">MediVault</span>
                 </div>
 
-                <div className="max-w-[440px] w-full mx-auto mt-12 mb-8">
+                <div className="max-w-100 w-full mx-auto mt-12 mb-8">
                     <div className="mb-10">
                         <h1 className="text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">Create Account</h1>
                         <p className="text-slate-500 font-medium text-sm">Join the MediVault network for secure healthcare management.</p>
@@ -212,7 +212,7 @@ export default function Register() {
                     <div className="absolute top-[40%] -left-[10%] w-[40%] h-[40%] bg-emerald-500/5 rounded-full blur-3xl"></div>
                 </div>
 
-                <div className="max-w-[420px] relative z-10 space-y-8">
+                <div className="max-w-105 relative z-10 space-y-8">
                     <div className="space-y-4">
                         <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Your health, securely managed.</h3>
                         <p className="text-slate-500 leading-relaxed text-sm font-medium">
@@ -222,7 +222,7 @@ export default function Register() {
 
                     <div className="space-y-4">
                         <div className="flex gap-4 p-5 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100/50">
-                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
+                            <div className="shrink-0 w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
                                 <CalendarDays size={20} />
                             </div>
                             <div>
@@ -232,7 +232,7 @@ export default function Register() {
                         </div>
 
                         <div className="flex gap-4 p-5 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100/50">
-                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <div className="shrink-0 w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                                 <Building2 size={20} />
                             </div>
                             <div>
