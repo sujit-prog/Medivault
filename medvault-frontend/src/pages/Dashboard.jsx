@@ -29,7 +29,7 @@ export default function Dashboard() {
   const [appointments, setAppointments] = useState([]);
   const [recordsCount, setRecordsCount] = useState(0);
 
-  useEffect(() => {
+  useEffect(async () => {
     // Fetch notifications
     const fetchNotifications = async () => {
       try {
@@ -39,7 +39,15 @@ export default function Dashboard() {
         console.error("Failed to fetch notifications", err);
       }
     };
+    const [notifRes, aptRes, recRes] = await Promise.all([
+  api.get("/notifications/unread"),
+  api.get("/appointments/patient"),
+  api.get("/records")
+]);
 
+setNotifications(notifRes.data);
+setAppointments(aptRes.data || []);
+setRecordsCount(recRes.data?.length || 0);
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem("token");
