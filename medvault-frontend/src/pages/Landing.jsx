@@ -14,7 +14,7 @@ export default function Landing() {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-slate-50 font-sans text-slate-900 overflow-x-hidden selection:bg-teal-100 selection:text-teal-900">
+        <div className="min-h-screen bg-slate-50 font-roboto text-slate-900 overflow-x-hidden selection:bg-teal-100 selection:text-teal-900">
 
             {/* Decorative Background Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -26,9 +26,7 @@ export default function Landing() {
             <nav className="relative z-10 w-full backdrop-blur-md bg-white/70 border-b border-slate-200/50 sticky top-0">
                 <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-                        <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-lg shadow-teal-200">
-                            <ShieldPlus size={22} />
-                        </div>
+                        <img src="/favicon.png" alt="MediVault Logo" className="w-10 h-10 drop-shadow-lg" />
                         <span className="font-extrabold text-xl tracking-tight text-slate-900">MediVault</span>
                     </div>
 
@@ -99,12 +97,12 @@ export default function Landing() {
                                     <Stethoscope size={24} />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-900">Dr. Sarah Smith</h4>
-                                    <p className="text-sm text-slate-500 font-medium">MedVault General Hospital</p>
+                                    <h4 className="font-bold text-slate-900">Dr. Behera</h4>
+                                    <p className="text-sm text-slate-500 font-medium">Anandapur General Hospital</p>
                                 </div>
                             </div>
 
-                            <button className="w-full py-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-600 text-sm font-bold transition-colors">
+                            <button href="#login" className="w-full py-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-600 text-sm font-bold transition-colors">
                                 View Details
                             </button>
                         </div>
@@ -184,9 +182,7 @@ export default function Landing() {
             <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
                 <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center">
-                            <ShieldPlus size={16} />
-                        </div>
+                        <img src="/favicon.png" alt="MediVault Logo" className="w-7 h-7 opacity-80" />
                         <span className="font-bold text-slate-200">MediVault © 2024</span>
                     </div>
                     <div className="flex gap-6 text-sm font-bold">

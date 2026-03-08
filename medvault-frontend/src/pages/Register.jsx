@@ -98,7 +98,7 @@ export default function Register() {
                                 <input type="radio" name="role" value="DOCTOR" checked={formData.role === 'DOCTOR'} onChange={handleInputChange} className="sr-only" />
                                 <div className="flex items-center gap-2.5">
                                     <Stethoscope size={18} className={formData.role === 'DOCTOR' ? 'text-teal-600' : 'text-slate-400'} />
-                                    <span className="font-bold text-sm">Provider</span>
+                                    <span className="font-bold text-sm">Doctor</span>
                                 </div>
                             </label>
                         </div>
