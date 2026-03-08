@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../services/api';
 import {
     Building2,
     CalendarDays,
@@ -14,10 +14,6 @@ import {
     Stethoscope,
     ChevronRight
 } from 'lucide-react';
-
-const API = axios.create({
-    baseURL: "https://medivault-production.up.railway.app/api",
-});
 
 export default function Register() {
     const [formData, setFormData] = useState({

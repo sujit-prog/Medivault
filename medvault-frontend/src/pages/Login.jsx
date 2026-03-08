@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../services/api';
 import {
   Eye,
   EyeOff,
@@ -12,23 +12,6 @@ import {
   ShieldPlus,
   Stethoscope
 } from 'lucide-react';
-
-/**
- * API CONFIGURATION (Integrated for Preview)
- * In your local project, this logic lives in 'src/services/api.js'.
- * I've included it here to fix the "Could not resolve" error in the preview.
- */
-const API = axios.create({
-  baseURL: "https://medivault-production.up.railway.app/api",
-});
-
-API.interceptors.request.use((req) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
-  return req;
-});
 
 /**
  * Clean & Simple Medical Portal Login

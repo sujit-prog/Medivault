@@ -1,16 +1,20 @@
 package com.medvault.medvault.security;
 
-import com.medvault.medvault.service.CustomUserDetailsService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.*;
+import java.io.IOException;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
+import com.medvault.medvault.service.CustomUserDetailsService;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -53,6 +57,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 if (jwtUtil.validateToken(token)) {
 
+                        
                     UsernamePasswordAuthenticationToken auth =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
@@ -60,8 +65,13 @@ public class JwtFilter extends OncePerRequestFilter {
                                     userDetails.getAuthorities()
                             );
 
+                    auth.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request)
+                    );
+
                     SecurityContextHolder.getContext().setAuthentication(auth);
-                }
+                    }
             }
         }
 

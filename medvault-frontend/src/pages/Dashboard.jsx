@@ -29,25 +29,9 @@ export default function Dashboard() {
   const [appointments, setAppointments] = useState([]);
   const [recordsCount, setRecordsCount] = useState(0);
 
-  useEffect(async () => {
-    // Fetch notifications
-    const fetchNotifications = async () => {
-      try {
-        const res = await api.get("/notifications/unread");
-        setNotifications(res.data);
-      } catch (err) {
-        console.error("Failed to fetch notifications", err);
-      }
-    };
-    const [notifRes, aptRes, recRes] = await Promise.all([
-  api.get("/notifications/unread"),
-  api.get("/appointments/patient"),
-  api.get("/records")
-]);
+  useEffect(() => {
+    let isMounted = true;
 
-setNotifications(notifRes.data);
-setAppointments(aptRes.data || []);
-setRecordsCount(recRes.data?.length || 0);
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -61,20 +45,30 @@ setRecordsCount(recRes.data?.length || 0);
           }
         }
 
-        const aptRes = await api.get("/appointments/patient");
-        setAppointments(aptRes.data || []);
+        // Fetch all data concurrently
+        const [notifRes, aptRes, recRes] = await Promise.allSettled([
+          api.get("/notifications/unread"),
+          api.get("/appointments/patient"),
+          api.get("/records")
+        ]);
 
-        const recRes = await api.get("/records");
-        setRecordsCount(recRes.data?.length || 0);
+        if (isMounted) {
+          if (notifRes.status === 'fulfilled') setNotifications(notifRes.value.data || []);
+          if (aptRes.status === 'fulfilled') setAppointments(aptRes.value.data || []);
+          if (recRes.status === 'fulfilled') setRecordsCount(recRes.value.data?.length || 0);
+        }
       } catch (err) {
         console.error("Failed to fetch dashboard data", err);
       } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     };
 
-    fetchNotifications();
     fetchDashboardData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const upcomingAppointments = appointments.filter(
