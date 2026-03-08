@@ -24,6 +24,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("Patient");
   const [isLoading, setIsLoading] = useState(true);
+  const [dataTimedOut, setDataTimedOut] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [appointments, setAppointments] = useState([]);
@@ -60,14 +61,27 @@ export default function Dashboard() {
       } catch (err) {
         console.error("Failed to fetch dashboard data", err);
       } finally {
-        if (isMounted) setIsLoading(false);
+        // Only clear loading state here if we didn't already timeout
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchDashboardData();
 
+    // Safety timeout: If backend hangs for more than 15 seconds, stop buffering
+    const timeoutId = setTimeout(() => {
+      if (isMounted && isLoading) {
+        console.warn("Dashboard data fetch timed out or took too long");
+        setDataTimedOut(true);
+        setIsLoading(false);
+      }
+    }, 15000);
+
     return () => {
       isMounted = false;
+      clearTimeout(timeoutId);
     };
   }, []);
 
@@ -225,6 +239,14 @@ export default function Dashboard() {
             <div>
               <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Good morning, {userName}.</h2>
               <p className="text-slate-500 font-medium mt-1">Here is a summary of your health dashboard for today.</p>
+              {dataTimedOut && (
+                <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                  <p className="text-amber-800 text-sm font-bold flex items-center gap-2">
+                    <span className="text-lg">⚠️</span>
+                    Server is waking up. Some data may be missing. Please refresh in a minute.
+                  </p>
+                </div>
+              )}
             </div>
             <Link to="/appointments" className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-xl shadow-slate-200 transition-all active:scale-[0.98]">
               <Plus size={16} />

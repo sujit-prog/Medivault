@@ -49,9 +49,7 @@ export default function MedicalRecords() {
     formData.append("category", category);
 
     try {
-      await api.post("/records/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      await api.post("/records/upload", formData);
       setFile(null);
       setTitle("");
       fetchRecords(); // Refresh list
@@ -128,7 +126,7 @@ export default function MedicalRecords() {
         </header>
 
         <div className="p-6 sm:p-10 max-w-5xl mx-auto w-full space-y-8">
-          
+
           {/* Upload Section */}
           <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
             <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -137,19 +135,19 @@ export default function MedicalRecords() {
             <form onSubmit={handleUpload} className="flex flex-col sm:flex-row gap-4 items-end">
               <div className="flex-1 w-full">
                 <label className="block text-sm font-bold text-slate-700 mb-1">Title</label>
-                <input 
-                  type="text" 
-                  value={title} 
-                  onChange={e => setTitle(e.target.value)} 
-                  placeholder="e.g. Blood Test Result" 
+                <input
+                  type="text"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  placeholder="e.g. Blood Test Result"
                   className="w-full p-2 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none" required
                 />
               </div>
               <div className="w-full sm:w-48">
                 <label className="block text-sm font-bold text-slate-700 mb-1">Category</label>
-                <select 
-                  value={category} 
-                  onChange={e => setCategory(e.target.value)} 
+                <select
+                  value={category}
+                  onChange={e => setCategory(e.target.value)}
                   className="w-full p-2 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none"
                 >
                   <option value="PRESCRIPTION">Prescription</option>
@@ -160,14 +158,14 @@ export default function MedicalRecords() {
               </div>
               <div className="w-full sm:w-64">
                 <label className="block text-sm font-bold text-slate-700 mb-1">File</label>
-                <input 
-                  type="file" 
-                  onChange={handleFileChange} 
+                <input
+                  type="file"
+                  onChange={handleFileChange}
                   className="w-full p-1.5 border border-slate-200 rounded-xl bg-slate-50 text-sm file:mr-4 file:py-1 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" required
                 />
               </div>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={uploading}
                 className="w-full sm:w-auto px-6 py-2.5 bg-teal-600 text-white font-bold rounded-xl shadow-md hover:bg-teal-700 transition flex items-center justify-center gap-2 disabled:opacity-70"
               >
@@ -179,7 +177,7 @@ export default function MedicalRecords() {
           {/* Records List Section */}
           <div>
             <h3 className="text-xl font-extrabold text-slate-900 mb-4">Your Medical Records</h3>
-            
+
             {isLoading ? (
               <p className="text-slate-500 font-medium">Loading records...</p>
             ) : records.length === 0 ? (

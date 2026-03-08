@@ -17,20 +17,22 @@ public class AppointmentController {
     private final UserRepository userRepository;
 
     public AppointmentController(AppointmentService appointmentService,
-                                 UserRepository userRepository) {
+            UserRepository userRepository) {
         this.appointmentService = appointmentService;
         this.userRepository = userRepository;
     }
 
     // ✅ BOOK appointment
     @PostMapping("/book")
-    public Appointment bookAppointment(@RequestBody Appointment request) {
+    public Appointment bookAppointment(@RequestBody Appointment request, Authentication authentication) {
+        String email = authentication.getName();
+        User patient = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         return appointmentService.bookAppointment(
-                request.getPatient(),
+                patient,
                 request.getDoctor(),
-                request.getAppointmentTime()
-        );
+                request.getAppointmentTime());
     }
 
     // ✅ GET logged-in patient's appointments
@@ -60,6 +62,7 @@ public class AppointmentController {
 
         return appointmentService.getDoctorAppointments(user);
     }
+
     // APPROVE
     @PutMapping("/approve/{id}")
     public Appointment approve(@PathVariable Long id) {
@@ -75,7 +78,7 @@ public class AppointmentController {
     // FEEDBACK
     @PutMapping("/feedback/{id}")
     public Appointment feedback(@PathVariable Long id,
-                                @RequestBody String feedback) {
+            @RequestBody String feedback) {
         return appointmentService.addFeedback(id, feedback);
     }
 }
