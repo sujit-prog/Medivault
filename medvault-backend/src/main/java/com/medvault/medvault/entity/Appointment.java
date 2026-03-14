@@ -18,9 +18,11 @@ public class Appointment {
 
     private LocalDateTime appointmentTime;
 
-    private String status; // BOOKED, CANCELLED, COMPLETED
+    private String status; // PENDING, BOOKED, APPROVED, REJECTED, CANCELLED
 
-    private String feedback; // patient feedback
+    private String feedback; // patient feedback text
+
+    private Integer rating; // 1-5 star rating
 
     // Getters & Setters
 
@@ -66,5 +68,13 @@ public class Appointment {
 
     public void setFeedback(String feedback) {
         this.feedback = feedback;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 }

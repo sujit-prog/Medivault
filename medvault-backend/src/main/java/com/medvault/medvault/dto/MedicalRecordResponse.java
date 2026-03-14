@@ -11,6 +11,8 @@ public class MedicalRecordResponse {
     private String auditTrail;
     private Long patientId;
     private String patientName;
+    private String fileUrl;
+    private String fileName;
 
     // Getters and Setters
     public Long getId() {
@@ -67,5 +69,21 @@ public class MedicalRecordResponse {
 
     public void setPatientName(String patientName) {
         this.patientName = patientName;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/consents")
-@CrossOrigin(origins = "*")
 public class ConsentController {
 
     @Autowired

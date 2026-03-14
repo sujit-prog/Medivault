@@ -17,18 +17,23 @@ import {
   ArrowRight,
   TrendingUp,
   ChevronRight,
-  Plus
+  Plus,
+  Menu,
+  X
 } from "lucide-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("Patient");
+  const initialRole = (localStorage.getItem("role") || "PATIENT").toUpperCase();
+  const [userRole, setUserRole] = useState(initialRole);
   const [isLoading, setIsLoading] = useState(true);
   const [dataTimedOut, setDataTimedOut] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [recordsCount, setRecordsCount] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -36,6 +41,9 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role") || "PATIENT";
+        setUserRole(role.toUpperCase());
+
         if (token) {
           try {
             const payload = JSON.parse(atob(token.split('.')[1]));
@@ -46,10 +54,13 @@ export default function Dashboard() {
           }
         }
 
+        const currentRole = (localStorage.getItem("role") || "PATIENT").toUpperCase();
+        const appointmentEndpoint = currentRole === "PATIENT" ? "/appointments/patient" : "/appointments/doctor";
+
         // Fetch all data concurrently
         const [notifRes, aptRes, recRes] = await Promise.allSettled([
           api.get("/notifications/unread"),
-          api.get("/appointments/patient"),
+          api.get(appointmentEndpoint),
           api.get("/records")
         ]);
 
@@ -122,12 +133,12 @@ export default function Dashboard() {
       {/* Sidebar Navigation */}
       <aside className="hidden lg:flex w-64 flex-col bg-white border-r border-slate-200 sticky top-0 h-screen">
         <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-lg shadow-teal-200">
-            <ShieldPlus size={20} />
-          </div>
+          <img src="/favicon.png" alt="MediVault Logo" className="w-10 h-10 drop-shadow-md" />
           <div>
             <h1 className="font-bold text-lg text-slate-900 leading-tight">MediVault</h1>
-            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Patient Portal</p>
+            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+              {userRole === 'PATIENT' ? 'Patient Portal' : 'Provider Portal'}
+            </p>
           </div>
         </div>
 
@@ -140,17 +151,29 @@ export default function Dashboard() {
             <CalendarDays size={20} />
             <span>Appointments</span>
           </Link>
-          <Link to="/availability" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
-            <Clock size={20} />
-            <span>Availability</span>
-          </Link>
+
+          {userRole !== 'PATIENT' && (
+            <Link to="/availability" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
+              <Clock size={20} />
+              <span>Availability</span>
+            </Link>
+          )}
+
           <Link to="/records" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
             <FileText size={20} />
-            <span>Health Records</span>
+            <span>{userRole === 'PATIENT' ? 'Health Records' : 'Patient Records'}</span>
+          </Link>
+          <Link to="/prescriptions" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
+            <Pill size={20} />
+            <span>Prescriptions</span>
           </Link>
           <Link to="/consents" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
             <ShieldPlus size={20} />
             <span>Data Consents</span>
+          </Link>
+          <Link to="/profile" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
+            <User size={20} />
+            <span>My Profile</span>
           </Link>
         </nav>
 
@@ -172,6 +195,9 @@ export default function Dashboard() {
         {/* Top Header */}
         <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-10 px-6 sm:px-10 h-16 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4 lg:hidden">
+            <button onClick={() => setMobileMenuOpen(true)} className="p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
+              <Menu size={20} />
+            </button>
             <div className="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center">
               <ShieldPlus size={16} />
             </div>
@@ -221,7 +247,13 @@ export default function Dashboard() {
             <div className="h-8 w-px bg-slate-200 mx-2 hidden sm:block"></div>
             <button className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <div className="hidden sm:block text-right">
-                <p className="text-sm font-bold text-slate-900 leading-none">{userName}</p>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider ${userRole === 'PATIENT' ? 'bg-teal-50 text-teal-600' : 'bg-indigo-50 text-indigo-600'
+                    }`}>
+                    {userRole === 'PATIENT' ? 'Patient' : 'Provider'}
+                  </span>
+                  <p className="text-sm font-bold text-slate-900 leading-none">{userName}</p>
+                </div>
                 <p className="text-[10px] text-slate-500 font-semibold mt-1">Free Plan</p>
               </div>
               <div className="w-9 h-9 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center border-2 border-white shadow-sm">
@@ -250,7 +282,7 @@ export default function Dashboard() {
             </div>
             <Link to="/appointments" className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-xl shadow-slate-200 transition-all active:scale-[0.98]">
               <Plus size={16} />
-              <span>Book Appointment</span>
+              <span>{userRole === 'PATIENT' ? 'Book Appointment' : 'View Schedule'}</span>
             </Link>
           </div>
 
@@ -312,10 +344,10 @@ export default function Dashboard() {
               <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
                 <FileText size={20} />
               </div>
-              <p className="text-sm font-bold text-slate-500 mb-1">Health Records</p>
+              <p className="text-sm font-bold text-slate-500 mb-1">{userRole === 'PATIENT' ? 'Health Records' : 'Cases Managed'}</p>
               <div className="flex items-baseline gap-2">
                 <h3 className="text-3xl font-black text-slate-900">{recordsCount}</h3>
-                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">Uploaded</span>
+                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">{userRole === 'PATIENT' ? 'Uploaded' : 'Total'}</span>
               </div>
             </div>
 
@@ -380,33 +412,35 @@ export default function Dashboard() {
                     <CalendarDays size={20} />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-slate-900 text-sm">Schedule Appointment</h4>
-                    <p className="text-xs text-slate-500 font-medium">Find a doctor and book</p>
+                    <h4 className="font-bold text-slate-900 text-sm">{userRole === 'PATIENT' ? 'Schedule Appointment' : 'Review Appointments'}</h4>
+                    <p className="text-xs text-slate-500 font-medium">{userRole === 'PATIENT' ? 'Find a doctor and book' : 'Manage your calendar'}</p>
                   </div>
                   <ChevronRight size={16} className="text-slate-300 group-hover:text-indigo-600 transition-colors" />
                 </Link>
 
-                <Link to="/availability" className="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-2xl transition-colors group cursor-pointer border-b border-slate-100 last:border-0">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <Clock size={20} />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-bold text-slate-900 text-sm">Manage Availability</h4>
-                    <p className="text-xs text-slate-500 font-medium">Provider tools</p>
-                  </div>
-                  <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600 transition-colors" />
-                </Link>
+                {userRole !== 'PATIENT' && (
+                  <Link to="/availability" className="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-2xl transition-colors group cursor-pointer border-b border-slate-100 last:border-0">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <Clock size={20} />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-900 text-sm">Manage Availability</h4>
+                      <p className="text-xs text-slate-500 font-medium">Provider tools</p>
+                    </div>
+                    <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600 transition-colors" />
+                  </Link>
+                )}
 
-                <a className="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-2xl transition-colors group border-b border-slate-100 last:border-0 opacity-60 cursor-not-allowed">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <Link to="/prescriptions" className="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-2xl transition-colors group cursor-pointer border-b border-slate-100 last:border-0">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                     <Pill size={20} />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-slate-900 text-sm">Renew Prescription</h4>
-                    <p className="text-xs text-slate-500 font-medium">Request a refill</p>
+                    <h4 className="font-bold text-slate-900 text-sm">{userRole === 'PATIENT' ? 'View Prescriptions' : 'Issue Prescription'}</h4>
+                    <p className="text-xs text-slate-500 font-medium">{userRole === 'PATIENT' ? 'View your medicines' : 'Prescribe to a patient'}</p>
                   </div>
-                  <ChevronRight size={16} className="text-slate-300" />
-                </a>
+                  <ChevronRight size={16} className="text-slate-300 group-hover:text-emerald-600 transition-colors" />
+                </Link>
 
               </div>
             </div>
@@ -415,6 +449,62 @@ export default function Dashboard() {
 
         </div>
       </main>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)}></div>
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-2xl h-full animate-in slide-in-from-left">
+            <div className="p-6 flex items-center justify-between border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-sm">
+                  <ShieldPlus size={20} />
+                </div>
+                <h1 className="font-bold text-lg text-slate-900">MediVault</h1>
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl">
+                <X size={20} />
+              </button>
+            </div>
+
+            <nav className="flex-1 px-4 space-y-1 mt-4 overflow-y-auto">
+              <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 bg-teal-50 text-teal-700 rounded-xl font-bold transition-colors">
+                <Home size={20} />
+                <span>Overview</span>
+              </Link>
+              <Link to="/appointments" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
+                <CalendarDays size={20} />
+                <span>Appointments</span>
+              </Link>
+              {userRole !== 'PATIENT' && (
+                <Link to="/availability" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
+                  <Clock size={20} />
+                  <span>Availability</span>
+                </Link>
+              )}
+              <Link to="/records" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
+                <FileText size={20} />
+                <span>{userRole === 'PATIENT' ? 'Health Records' : 'Patient Records'}</span>
+              </Link>
+              <Link to="/prescriptions" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
+                <Pill size={20} />
+                <span>Prescriptions</span>
+              </Link>
+              <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
+                <User size={20} />
+                <span>My Profile</span>
+              </Link>
+            </nav>
+            <div className="p-4 border-t border-slate-100">
+              <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 w-full text-rose-500 hover:bg-rose-50 rounded-xl font-bold transition-colors">
+                <LogOut size={20} />
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

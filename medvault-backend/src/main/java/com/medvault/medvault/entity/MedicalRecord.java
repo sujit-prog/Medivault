@@ -22,17 +22,49 @@ public class MedicalRecord {
     @Column(nullable = false)
     private RecordCategory category;
 
+    /**
+     * Original filename (e.g. blood_test.pdf) – stored for Content-Disposition
+     * header
+     */
+    @Column(name = "file_name")
+    private String fileName;
+
+    /** MIME type detected at upload time */
+    @Column(name = "content_type")
+    private String contentType;
+
+    /** The actual file bytes – stored as LONGBLOB in MySQL */
+    @Lob
+    @Column(name = "file_data", columnDefinition = "LONGBLOB")
+    private byte[] fileData;
+
+    /**
+     * FIX: The DB column was created as NOT NULL (legacy schema).
+     * ddl-auto=update never drops that constraint, so every insert failed with
+     * "Column 'file_path' cannot be null".
+     * Setting a default empty string satisfies the constraint without a migration.
+     * New records store bytes in file_data; this field is kept for back-compat
+     * only.
+     */
     @Column(name = "file_path", nullable = false)
-    private String filePath; // Path to the file stored locally
+    private String filePath = "";
 
     @Column(name = "uploaded_at", nullable = false, updatable = false)
-    private LocalDateTime uploadedAt = LocalDateTime.now();
+    private LocalDateTime uploadedAt;
 
-    // Contains JSON or simple text detailing edits/updates
+    @PrePersist
+    protected void onCreate() {
+        this.uploadedAt = LocalDateTime.now();
+        // Guarantee file_path is never null even if setter was never called
+        if (this.filePath == null) {
+            this.filePath = "";
+        }
+    }
+
     @Column(columnDefinition = "TEXT")
     private String auditTrail;
 
-    // Getters and Setters
+    // ── Getters & Setters ────────────────────────────────────────────────────
 
     public Long getId() {
         return id;
@@ -66,12 +98,36 @@ public class MedicalRecord {
         this.category = category;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public byte[] getFileData() {
+        return fileData;
+    }
+
+    public void setFileData(byte[] fileData) {
+        this.fileData = fileData;
+    }
+
     public String getFilePath() {
         return filePath;
     }
 
     public void setFilePath(String filePath) {
-        this.filePath = filePath;
+        this.filePath = filePath != null ? filePath : "";
     }
 
     public LocalDateTime getUploadedAt() {

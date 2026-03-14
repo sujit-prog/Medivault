@@ -7,6 +7,9 @@ import Appointments from "./pages/Appointments";
 import Availability from "./pages/Availability";
 import MedicalRecords from "./pages/MedicalRecords";
 import ConsentManagement from "./pages/ConsentManagement";
+import Profile from "./pages/Profile";
+import Prescriptions from "./pages/Prescriptions";
+import ForgotPassword from "./pages/ForgotPassword";
 import './index.css'
 
 function App() {
@@ -21,6 +24,9 @@ function App() {
         <Route path="/availability" element={<Availability />} />
         <Route path="/records" element={<MedicalRecords />} />
         <Route path="/consents" element={<ConsentManagement />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/prescriptions" element={<Prescriptions />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </BrowserRouter>
   );

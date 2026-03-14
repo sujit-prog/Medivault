@@ -9,7 +9,6 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
-  ShieldPlus,
   Stethoscope
 } from 'lucide-react';
 
@@ -38,8 +37,10 @@ export default function Login() {
         password,
       });
 
-      // Store the JWT token from the backend
+      // Store the JWT token and user info from the backend
       localStorage.setItem("token", res.data.token);
+      if (res.data.role) localStorage.setItem("role", res.data.role);
+      if (res.data.id) localStorage.setItem("userId", res.data.id);
 
       setStatus({ type: 'success', message: "Access granted. Synchronizing your profile..." });
 
@@ -66,11 +67,11 @@ export default function Login() {
       <div className="w-full max-w-100">
         {/* Simple Branding Header */}
         <div className="text-center mb-8">
-          <button onClick={() => navigate('/')} className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-teal-600 hover:bg-teal-700 text-white mb-4 shadow-lg shadow-teal-100 transition-colors">
-            <ShieldPlus size={24} />
+          <button onClick={() => navigate('/')} className="inline-flex items-center justify-center mb-4">
+            <img src="/favicon.png" alt="MediVault Logo" className="w-12 h-12 drop-shadow-lg" />
           </button>
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">MediVault Access</h2>
-          <p className="text-sm text-slate-500 mt-1 font-medium tracking-wide uppercase">Secure Patient Portal</p>
+          <p className="text-sm text-slate-500 mt-1 font-medium tracking-wide uppercase">Secure Health Portal</p>
         </div>
 
         {/* Clean Login Card */}
@@ -79,7 +80,7 @@ export default function Login() {
 
             {/* Identifier Field */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-400 ml-1 uppercase tracking-tighter">Patient Identifier</label>
+              <label className="text-xs font-bold text-slate-400 ml-1 uppercase tracking-tighter">Email</label>
               <div className="relative group text-slate-900">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-teal-500 transition-colors" size={18} />
                 <input
@@ -97,7 +98,7 @@ export default function Login() {
             <div className="space-y-1.5">
               <div className="flex justify-between items-center px-1">
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-tighter">Passkey</label>
-                <button type="button" className="text-xs font-semibold text-teal-600 hover:underline">Forgot?</button>
+                <button type="button" className="text-xs font-semibold text-teal-600 hover:underline" onClick={() => navigate('/forgot-password')}>Forgot?</button>
               </div>
               <div className="relative group text-slate-900">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-teal-500 transition-colors" size={18} />
@@ -150,16 +151,14 @@ export default function Login() {
           {/* Card Footer */}
           <div className="bg-slate-50 py-5 text-center border-t border-slate-100">
             <p className="text-xs text-slate-500 font-medium">
-              New patient? <button type="button" onClick={() => navigate('/register')} className="text-teal-600 font-bold hover:underline">Register Account</button>
+              New User? <button type="button" onClick={() => navigate('/register')} className="text-teal-600 font-bold hover:underline">Register Account</button>
             </p>
           </div>
         </div>
 
         {/* Footnote Links */}
         <div className="mt-8 flex justify-center gap-6 text-[10px] text-slate-400 font-bold uppercase tracking-[0.15em]">
-          <button className="hover:text-teal-600 transition-colors">Clinician Portal</button>
-          <button className="hover:text-rose-500 transition-colors">Emergency</button>
-          <button className="hover:text-teal-600 transition-colors">Support</button>
+          <button type="button" onClick={() => window.open('https://github.com/sujit-prog')} className="hover:text-teal-600 transition-colors">Support</button>
         </div>
       </div>
     </div>

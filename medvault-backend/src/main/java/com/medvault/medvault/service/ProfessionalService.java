@@ -18,11 +18,10 @@ public class ProfessionalService {
             User user,
             String organizationName,
             String specialization,
-            String licenseNumber
-    ) {
+            String licenseNumber) {
 
-        // ✅ SET ROLE INSIDE METHOD
-        user.setRole("PROFESSIONAL");
+        // ✅ REMOVED ROLE OVERWRITE
+        // user.setRole("PROFESSIONAL");
 
         ProfessionalProfile profile = new ProfessionalProfile();
         profile.setUser(user);

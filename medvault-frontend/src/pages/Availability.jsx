@@ -14,18 +14,29 @@ import {
 } from "lucide-react";
 
 export default function Availability() {
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const getLocalDateString = (date) => {
+    const pad = (n) => n.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getLocalDateString(new Date()));
   const [time, setTime] = useState("");
   const [availability, setAvailability] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const [status, setStatus] = useState({ type: null, message: "" });
+  const [success, setSuccess] = useState(false);
 
   const navigate = useNavigate();
 
-  // Mock initial data if API fails
   useEffect(() => {
+    const role = localStorage.getItem("role")?.toUpperCase() || "PATIENT";
+    if (role === "PATIENT") {
+      navigate("/dashboard");
+      return;
+    }
     fetchAvailability();
-  }, []);
+  }, [navigate]);
 
   const fetchAvailability = async () => {
     try {
@@ -36,13 +47,15 @@ export default function Availability() {
         const d = new Date(a.startTime);
         return {
           id: a.id,
-          date: d.toISOString().split('T')[0],
+          date: getLocalDateString(d),
           time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
       });
+      console.log("Fetched slots:", mapped);
       setAvailability(mapped);
     } catch (err) {
       console.error(err);
+      setStatus({ type: 'error', message: 'Failed to fetch availability.' });
     } finally {
       setIsLoading(false);
     }
@@ -55,18 +68,36 @@ export default function Availability() {
     setIsAdding(true);
     try {
       // Calculate end time (assuming 30min slots)
-      const startDateTime = new Date(`${selectedDate}T${time}`);
+      // Calculate end time (assuming 30min slots)
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const [hours, minutes] = time.split(':').map(Number);
+
+      const startDateTime = new Date(year, month - 1, day, hours, minutes, 0);
       const endDateTime = new Date(startDateTime.getTime() + 30 * 60000);
 
+      // Format to YYYY-MM-DDTHH:mm:ss for backend LocalDateTime.parse()
+      const formatLocalISO = (date) => {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+      };
+
       const res = await API.post("/availability/add", {
-        startTime: startDateTime.toISOString(),
-        endTime: endDateTime.toISOString()
+        startTime: formatLocalISO(startDateTime),
+        endTime: formatLocalISO(endDateTime)
       });
 
-      fetchAvailability();
+      setSuccess(true); // Added from instruction
       setTime("");
+      fetchAvailability();
+      setTimeout(() => setSuccess(false), 3000); // Added from instruction
     } catch (err) {
-      console.error(err);
+      console.error("Establish Slot Error:", err);
+      const backendError = err.response?.data;
+      const status = err.response?.status;
+      setStatus({
+        type: 'error',
+        message: typeof backendError === 'string' ? backendError : `Failed to establish slot (${status || 'Network Error'})`
+      });
     } finally {
       setIsAdding(false);
     }
@@ -132,7 +163,7 @@ export default function Availability() {
 
               <div className="space-y-2">
                 {upcomingDates.map((date, i) => {
-                  const dateStr = date.toISOString().split('T')[0];
+                  const dateStr = getLocalDateString(date);
                   const isSelected = selectedDate === dateStr;
                   const dayName = date.toLocaleDateString(undefined, { weekday: 'short' });
                   const dayNum = date.getDate();
@@ -161,32 +192,105 @@ export default function Availability() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-              <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2 text-sm">
-                <Clock size={18} className="text-teal-600" />
-                Add Time Slot
+            <div className="bg-white rounded-2xl shadow-lg border-2 border-slate-100 p-6">
+              <h3 className="font-bold text-slate-900 mb-6 flex items-center gap-2 text-base">
+                <Clock size={20} className="text-teal-600" />
+                Select Time Slot
               </h3>
-              <form onSubmit={handleAdd} className="space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-tighter mb-1.5 block">Start Time</label>
-                  <input
-                    type="time"
-                    required
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all text-sm text-slate-900 flex-1"
-                  />
+
+              <div className="flex gap-4 mb-6 h-48">
+                {/* Hour Selection */}
+                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block text-center sticky top-0 bg-white py-1">Hour</label>
+                  <div className="grid grid-cols-1 gap-1.5">
+                    {Array.from({ length: 24 }).map((_, i) => {
+                      const h = i.toString().padStart(2, '0');
+                      const selectedH = time.split(':')[0];
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => setTime(`${h}:${time.split(':')[1] || '00'}`)}
+                          className={`py-2.5 rounded-xl font-bold text-sm transition-all ${selectedH === h
+                            ? 'bg-teal-600 text-white shadow-md shadow-teal-100'
+                            : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
+                            }`}
+                        >
+                          {h}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <button
-                  type="submit"
-                  disabled={isAdding || !time}
-                  className="w-full h-10 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-bold rounded-xl shadow-sm transition-all"
-                >
-                  {isAdding ? "Adding..." : "Add Slot"}
-                  {!isAdding && <Plus size={16} />}
-                </button>
-              </form>
+
+                {/* Minute Selection */}
+                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block text-center sticky top-0 bg-white py-1">Min</label>
+                  <div className="grid grid-cols-1 gap-1.5">
+                    {['00', '15', '30', '45'].map((m) => {
+                      const selectedM = time.split(':')[1];
+                      return (
+                        <button
+                          key={m}
+                          onClick={() => setTime(`${time.split(':')[0] || '09'}:${m}`)}
+                          className={`py-2.5 rounded-xl font-bold text-sm transition-all ${selectedM === m
+                            ? 'bg-teal-600 text-white shadow-md shadow-teal-100'
+                            : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
+                            }`}
+                        >
+                          {m}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-100">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-tighter mb-2">
+                  <span>Selected Time</span>
+                  <span className="text-teal-600">30 Min Session</span>
+                </div>
+                <div className="text-2xl font-black text-slate-900 tracking-tight">
+                  {time ? formatTimeString(time) : "Select a time..."}
+                </div>
+              </div>
+
+              {status.message && (
+                <div className={`mb-6 p-4 rounded-xl text-sm font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-1 ${status.type === 'error' ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-teal-50 text-teal-600 border border-teal-100'
+                  }`}>
+                  {status.type === 'error' ? (
+                    <div className="w-5 h-5 rounded-full bg-rose-100 flex items-center justify-center shrink-0">!</div>
+                  ) : (
+                    <CheckCircle2 size={18} />
+                  )}
+                  {status.message}
+                </div>
+              )}
+
+              <button
+                onClick={handleAdd}
+                disabled={isAdding || !time}
+                className={`w-full h-12 flex items-center justify-center gap-3 rounded-2xl shadow-xl transition-all active:scale-[0.98] ${time
+                  ? 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200'
+                  : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                  }`}
+              >
+                {isAdding ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                ) : success ? (
+                  <>
+                    <span className="font-bold">Slot Established</span>
+                    <CheckCircle2 size={20} />
+                  </>
+                ) : (
+                  <>
+                    <span className="font-bold">Establish Slot</span>
+                    <Plus size={20} />
+                  </>
+                )}
+              </button>
             </div>
+
 
           </div>
 

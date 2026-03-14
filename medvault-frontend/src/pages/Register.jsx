@@ -38,7 +38,10 @@ export default function Register() {
         setStatus({ type: null, message: "" });
 
         try {
-            await API.post("/auth/register", formData);
+            const res = await API.post("/auth/register", formData);
+            if (res.data.token) localStorage.setItem("token", res.data.token);
+            if (res.data.role) localStorage.setItem("role", res.data.role);
+            if (res.data.id) localStorage.setItem("userId", res.data.id);
 
             setStatus({ type: 'success', message: "Account successfully created. Proceeding to login..." });
 
@@ -64,9 +67,7 @@ export default function Register() {
             <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 py-12 border-r border-slate-100 relative min-h-screen overflow-y-auto">
 
                 <div className="absolute top-8 left-8 flex items-center gap-2 group cursor-pointer" onClick={() => navigate('/')}>
-                    <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition-colors">
-                        <ShieldPlus size={18} />
-                    </div>
+                    <img src="/favicon.png" alt="MediVault Logo" className="w-8 h-8 drop-shadow-sm" />
                     <span className="font-bold text-sm text-slate-700 tracking-tight">MediVault</span>
                 </div>
 

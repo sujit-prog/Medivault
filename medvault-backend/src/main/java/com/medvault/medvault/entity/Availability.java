@@ -1,5 +1,6 @@
 package com.medvault.medvault.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,10 @@ public class Availability {
     @ManyToOne
     private User doctor;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endTime;
 
     public Long getId() {

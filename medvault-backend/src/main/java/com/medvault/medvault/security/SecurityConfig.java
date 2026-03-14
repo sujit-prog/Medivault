@@ -20,17 +20,25 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .cors(cors -> {})  // 🔥 VERY IMPORTANT
+                .cors(cors -> {
+                })
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/users/debug/**",
+                                "/api/availability/doctor/*",
+                                "/api/availability/ping",
+                                // FIX: Spring internally forwards failed/empty responses to /error.
+                                // Without this, DELETE/PUT responses with no body cause Spring to
+                                // forward to GET /error, which has no auth context → phantom 403.
+                                "/error")
+                        .permitAll()
+                        .anyRequest().authenticated())
 
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

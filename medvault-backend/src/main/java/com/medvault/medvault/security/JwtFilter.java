@@ -22,9 +22,6 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
 
-
-
-
     public JwtFilter(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
@@ -32,14 +29,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
 
         String path = request.getServletPath();
 
-        // ✅ SKIP AUTH ENDPOINTS
-        if (path.startsWith("/api/auth")) {
+        // ✅ SKIP AUTH AND DIAGNOSTIC ENDPOINTS
+        if (path.startsWith("/api/auth") ||
+                path.startsWith("/api/users/debug")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -50,28 +48,26 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = header.substring(7);
 
             String email = jwtUtil.extractEmail(token);
+            System.out.println("DEBUG: JwtFilter - Email extracted: " + email);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 if (jwtUtil.validateToken(token)) {
-
-                        
-                    UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
+                    System.out.println("DEBUG: JwtFilter - Token validated for: " + email);
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities());
 
                     auth.setDetails(
                             new WebAuthenticationDetailsSource()
-                                    .buildDetails(request)
-                    );
+                                    .buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(auth);
-                    }
+                    System.out.println("DEBUG: JwtFilter - Authentication set for: " + email);
+                }
             }
         }
 

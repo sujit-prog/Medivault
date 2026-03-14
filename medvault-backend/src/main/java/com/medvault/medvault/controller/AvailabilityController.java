@@ -16,7 +16,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/availability")
-@CrossOrigin(origins = "*")
 public class AvailabilityController {
 
     @Autowired
@@ -25,14 +24,26 @@ public class AvailabilityController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("pong");
+    }
+
     @PostMapping("/add")
     public ResponseEntity<?> addSlot(@RequestBody Map<String, String> request, Principal principal) {
+        System.out.println("DEBUG: AvailabilityController - addSlot called by: "
+                + (principal != null ? principal.getName() : "null"));
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
         try {
             User doctor = userService.findByEmail(principal.getName())
                     .orElseThrow(() -> new Exception("User not found"));
 
-            if (!"PROFESSIONAL".equalsIgnoreCase(doctor.getRole())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only professionals can add availability");
+            String role = doctor.getRole();
+            System.out.println("DEBUG: AvailabilityController - User role: " + role);
+            if (!"DOCTOR".equalsIgnoreCase(role) && !"PROFESSIONAL".equalsIgnoreCase(role)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only doctors can add availability");
             }
 
             LocalDateTime start = LocalDateTime.parse(request.get("startTime"));
@@ -47,6 +58,9 @@ public class AvailabilityController {
 
     @GetMapping("/doctor")
     public ResponseEntity<?> getDoctorAvailability(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
         try {
             User doctor = userService.findByEmail(principal.getName())
                     .orElseThrow(() -> new Exception("User not found"));
@@ -58,8 +72,36 @@ public class AvailabilityController {
         }
     }
 
+    @Autowired
+    private com.medvault.medvault.repository.AvailabilityRepository availabilityRepository;
+
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<?> getAvailabilityForDoctor(@PathVariable Long doctorId) {
+        System.out.println("DEBUG: getAvailabilityForDoctor called for ID: " + doctorId);
+        try {
+            List<Availability> slots = availabilityRepository.findByDoctorId(doctorId);
+            System.out.println("DEBUG: getAvailabilityForDoctor ID: " + doctorId + " - Slots found: " + slots.size());
+
+            List<java.util.Map<String, Object>> safeSlots = slots.stream().map(s -> {
+                java.util.Map<String, Object> map = new java.util.HashMap<>();
+                map.put("id", s.getId());
+                map.put("startTime", s.getStartTime() != null ? s.getStartTime().toString() : null);
+                map.put("endTime", s.getEndTime() != null ? s.getEndTime().toString() : null);
+                return map;
+            }).collect(java.util.stream.Collectors.toList());
+
+            return ResponseEntity.ok(safeSlots);
+        } catch (Exception e) {
+            System.out.println("DEBUG: Error in getAvailabilityForDoctor: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSlot(@PathVariable Long id, Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
         try {
             User doctor = userService.findByEmail(principal.getName())
                     .orElseThrow(() -> new Exception("User not found"));
