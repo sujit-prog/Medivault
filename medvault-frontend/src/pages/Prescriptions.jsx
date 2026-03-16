@@ -199,7 +199,7 @@ export default function Prescriptions() {
                     <div>
                         <h1 className="font-bold text-lg text-slate-900 leading-tight">MediVault</h1>
                         <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                            {userRole === "PATIENT" ? "Patient Portal" : "Provider Portal"}
+                            {userRole === "PATIENT" ? "Patient Portal" : "Doctor Portal"}
                         </p>
                     </div>
                 </div>

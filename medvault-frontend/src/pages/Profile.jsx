@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-    ShieldPlus, Home, CalendarDays, Clock, FileText, ShieldCheck,
+    ShieldPlus, Home, CalendarDays, Clock, FileText, ShieldCheck, Pill,
     Settings, LogOut, User, Stethoscope, Pencil, CheckCircle2, X,
     Phone, MapPin, Calendar, Droplet, Building2, BadgeCheck, ChevronRight
 } from "lucide-react";
@@ -107,7 +107,8 @@ export default function Profile() {
         { to: "/appointments", icon: CalendarDays, label: "Appointments" },
         ...(userRole !== "PATIENT" ? [{ to: "/availability", icon: Clock, label: "Availability" }] : []),
         { to: "/records", icon: FileText, label: isPatient ? "Health Records" : "Patient Records" },
-        { to: "/consents", icon: ShieldCheck, label: "Data Consents" },
+        { to: "/prescriptions", icon: Pill, label: "Prescriptions" },
+        { to: "/consents", icon: ShieldPlus, label: "Data Consents" },
         { to: "/profile", icon: User, label: "My Profile", active: true },
     ];
 
@@ -120,7 +121,7 @@ export default function Profile() {
                     <div>
                         <h1 className="font-bold text-lg text-slate-900 leading-tight">MediVault</h1>
                         <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                            {isPatient ? "Patient Portal" : "Provider Portal"}
+                            {isPatient ? "Patient Portal" : "Doctor Portal"}
                         </p>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldPlus, Home, CalendarDays, Clock, FileText, Upload, Trash2, ShieldCheck, Settings, LogOut, Eye, Pencil, X, CheckCircle2 } from "lucide-react";
+import { ShieldPlus, Home, CalendarDays, Clock, FileText, Upload, Trash2, ShieldCheck, Settings, LogOut, Eye, Pencil, X, CheckCircle2, Pill, User } from "lucide-react";
 import api from "../services/api";
 
 export default function MedicalRecords() {
@@ -166,7 +166,7 @@ export default function MedicalRecords() {
           <div>
             <h1 className="font-bold text-lg text-slate-900 leading-tight">MediVault</h1>
             <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-              {userRole === 'PATIENT' ? 'Patient Portal' : 'Provider Portal'}
+              {userRole === 'PATIENT' ? 'Patient Portal' : 'Doctor Portal'}
             </p>
           </div>
         </div>
@@ -192,9 +192,17 @@ export default function MedicalRecords() {
             <FileText size={20} />
             <span>{userRole === 'PATIENT' ? 'Health Records' : 'Patient Records'}</span>
           </Link>
+          <Link to="/prescriptions" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
+            <Pill size={20} />
+            <span>Prescriptions</span>
+          </Link>
           <Link to="/consents" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
-            <ShieldCheck size={20} />
+            <ShieldPlus size={20} />
             <span>Data Consents</span>
+          </Link>
+          <Link to="/profile" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition-colors">
+            <User size={20} />
+            <span>My Profile</span>
           </Link>
         </nav>
 

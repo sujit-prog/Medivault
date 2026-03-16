@@ -137,7 +137,7 @@ export default function Dashboard() {
           <div>
             <h1 className="font-bold text-lg text-slate-900 leading-tight">MediVault</h1>
             <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-              {userRole === 'PATIENT' ? 'Patient Portal' : 'Provider Portal'}
+              {userRole === 'PATIENT' ? 'Patient Portal' : 'Doctor Portal'}
             </p>
           </div>
         </div>
@@ -208,7 +208,7 @@ export default function Dashboard() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-teal-500" size={18} />
             <input
               type="text"
-              placeholder="Search providers, records, or tests..."
+              placeholder="Search doctors, records, or tests..."
               className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 transition-all text-sm outline-none"
             />
           </div>
@@ -250,7 +250,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider ${userRole === 'PATIENT' ? 'bg-teal-50 text-teal-600' : 'bg-indigo-50 text-indigo-600'
                     }`}>
-                    {userRole === 'PATIENT' ? 'Patient' : 'Provider'}
+                    {userRole === 'PATIENT' ? 'Patient' : 'Doctor'}
                   </span>
                   <p className="text-sm font-bold text-slate-900 leading-none">{userName}</p>
                 </div>
@@ -383,7 +383,7 @@ export default function Dashboard() {
                       {nextApt.type || "General Checkup"}
                     </span>
                     <h4 className="text-xl font-bold text-slate-900 mb-1">
-                      {nextApt.doctor?.name || nextApt.doctor?.email || "Unknown Provider"}
+                      {nextApt.doctor?.name || nextApt.doctor?.email || "Unknown Doctor"}
                     </h4>
                     <p className="text-slate-500 text-sm font-medium mb-4">MedVault General Hospital</p>
 
@@ -425,7 +425,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-slate-900 text-sm">Manage Availability</h4>
-                      <p className="text-xs text-slate-500 font-medium">Provider tools</p>
+                      <p className="text-xs text-slate-500 font-medium">Doctor tools</p>
                     </div>
                     <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600 transition-colors" />
                   </Link>

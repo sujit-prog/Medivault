@@ -213,7 +213,7 @@ export default function Register() {
                     <div className="space-y-4">
                         <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Your health, securely managed.</h3>
                         <p className="text-slate-500 leading-relaxed text-sm font-medium">
-                            Join thousands of patients and providers on a single, secure network. Manage appointments, clinical records, and availability with enterprise-grade security.
+                            Join thousands of patients and doctors on a single, secure network. Manage appointments, clinical records, and availability with enterprise-grade security.
                         </p>
                     </div>
 
@@ -234,7 +234,7 @@ export default function Register() {
                             </div>
                             <div>
                                 <h4 className="font-bold text-slate-900 text-sm mb-1">Network of Care</h4>
-                                <p className="text-xs text-slate-500 font-medium">Connect directly with top healthcare providers.</p>
+                                <p className="text-xs text-slate-500 font-medium">Connect directly with top healthcare professionals.</p>
                             </div>
                         </div>
                     </div>

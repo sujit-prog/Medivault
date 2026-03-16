@@ -3,7 +3,7 @@ package com.medvault.medvault.dto;
 public class RegisterRequest {
     private String email;
     private String password;
-    private String role; // "patient" or "provider"
+    private String role; // "patient" or "doctor"
 
     // Optional fields depending on role, typically a real app would collect more
     private String firstName;

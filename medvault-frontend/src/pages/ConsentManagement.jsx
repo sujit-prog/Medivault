@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-    Home, CalendarDays, Clock, FileText, ShieldCheck, Settings, LogOut,
-    UserPlus, CheckCircle, XCircle, Clock3, ShieldAlert, ExternalLink, RefreshCw
+    Home, CalendarDays, Clock, FileText, ShieldCheck, ShieldPlus, Settings, LogOut,
+    UserPlus, CheckCircle, XCircle, Clock3, ShieldAlert, ExternalLink, RefreshCw, Pill, User
 } from "lucide-react";
 import api from "../services/api";
 
@@ -30,6 +30,7 @@ export default function ConsentManagement() {
     const [patientConsents, setPatientConsents] = useState([]);
     const [doctorConsents, setDoctorConsents] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [patients, setPatients] = useState([]);
     const [patientIdInput, setPatientIdInput] = useState("");
     const [requesting, setRequesting] = useState(false);
     const [actionLoading, setActionLoading] = useState(null); // consent id being acted on
@@ -40,8 +41,12 @@ export default function ConsentManagement() {
         setIsLoading(true);
         try {
             if (isDoctor) {
-                const dRes = await api.get("/consents/doctor").catch(() => null);
+                const [dRes, ptRes] = await Promise.all([
+                    api.get("/consents/doctor").catch(() => null),
+                    api.get("/users/patients").catch(() => null)
+                ]);
                 if (dRes?.data) setDoctorConsents(dRes.data);
+                if (ptRes?.data) setPatients(ptRes.data);
             } else {
                 const pRes = await api.get("/consents/patient").catch(() => null);
                 if (pRes?.data) setPatientConsents(pRes.data);
@@ -69,7 +74,8 @@ export default function ConsentManagement() {
             alert("Consent request sent successfully.");
         } catch (err) {
             console.error(err);
-            alert(err.response?.data || "Failed to send request. Ensure patient ID is correct.");
+            const errMsg = err.response?.data?.message || (typeof err.response?.data === "string" ? err.response.data : "Failed to send request. Ensure patient ID is correct.");
+            alert(errMsg);
         } finally {
             setRequesting(false);
         }
@@ -93,8 +99,9 @@ export default function ConsentManagement() {
         { to: "/appointments", icon: <CalendarDays size={20} />, label: "Appointments" },
         ...(isDoctor ? [{ to: "/availability", icon: <Clock size={20} />, label: "Availability" }] : []),
         { to: "/records", icon: <FileText size={20} />, label: isDoctor ? "Patient Records" : "Health Records" },
-        { to: "/consents", icon: <ShieldCheck size={20} />, label: "Data Consents", active: true },
-
+        { to: "/prescriptions", icon: <Pill size={20} />, label: "Prescriptions" },
+        { to: "/consents", icon: <ShieldPlus size={20} />, label: "Data Consents", active: true },
+        { to: "/profile", icon: <User size={20} />, label: "My Profile" },
     ];
 
     return (
@@ -106,7 +113,7 @@ export default function ConsentManagement() {
                     <div>
                         <h1 className="font-bold text-lg text-slate-900 leading-tight">MediVault</h1>
                         <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                            {isDoctor ? "Provider Portal" : "Patient Portal"}
+                            {isDoctor ? "Doctor Portal" : "Patient Portal"}
                         </p>
                     </div>
                 </div>
@@ -162,19 +169,22 @@ export default function ConsentManagement() {
                                     <UserPlus size={20} className="text-teal-600" /> Request Patient Access
                                 </h3>
                                 <p className="text-sm text-slate-500 mb-4">
-                                    Enter the patient's ID to request access to their health records. The patient must approve before you can view anything.
+                                    Select a patient to request access to their health records. The patient must approve before you can view anything.
                                 </p>
                                 <form onSubmit={handleRequestConsent} className="flex flex-col sm:flex-row gap-3 items-end">
                                     <div className="flex-1 w-full">
-                                        <label className="block text-sm font-bold text-slate-700 mb-1">Patient ID</label>
-                                        <input
-                                            type="number"
+                                        <label className="block text-sm font-bold text-slate-700 mb-1">Select Patient</label>
+                                        <select
                                             value={patientIdInput}
                                             onChange={e => setPatientIdInput(e.target.value)}
-                                            placeholder="Enter numeric patient ID..."
                                             className="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-teal-500 outline-none"
                                             required
-                                        />
+                                        >
+                                            <option value="" disabled>Choose a patient...</option>
+                                            {patients.map(p => (
+                                                <option key={p.id} value={p.id}>{p.email} (ID: {p.id})</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <button
                                         type="submit"
@@ -259,7 +269,7 @@ export default function ConsentManagement() {
                                 <EmptyState
                                     icon={<ShieldCheck size={32} />}
                                     title="No Access Requests"
-                                    desc="No healthcare provider has requested access to your records yet."
+                                    desc="No healthcare professional has requested access to your records yet."
                                 />
                             ) : (
                                 <div className="grid gap-4">

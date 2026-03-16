@@ -64,7 +64,7 @@ public class AuthController {
                     String lName = request.getLastName() != null ? request.getLastName() : "";
                     String fullName = (fName + " " + lName).trim();
                     patientService.createPatientProfile(newUser, fullName.isEmpty() ? null : fullName, null, null);
-                } else if (role.equalsIgnoreCase("provider") || role.equalsIgnoreCase("professional")
+                } else if (role.equalsIgnoreCase("professional")
                         || role.equalsIgnoreCase("doctor")) {
                     professionalService.createProfessionalProfile(newUser, null, null, null);
                 }

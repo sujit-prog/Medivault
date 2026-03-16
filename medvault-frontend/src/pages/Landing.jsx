@@ -33,7 +33,7 @@ export default function Landing() {
                     <div className="hidden md:flex items-center gap-8 font-bold text-sm text-slate-500">
                         <a href="#features" className="hover:text-teal-600 transition-colors">Features</a>
                         <a href="#security" className="hover:text-teal-600 transition-colors">Security</a>
-                        <a href="#providers" className="hover:text-teal-600 transition-colors">For Providers</a>
+                        <a href="#providers" className="hover:text-teal-600 transition-colors">For Doctors</a>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -64,7 +64,7 @@ export default function Landing() {
                         </h1>
 
                         <p className="text-lg text-slate-500 font-medium leading-relaxed mb-10 max-w-xl">
-                            Connect directly with top healthcare providers, manage your appointments seamlessly, and keep all your medical records perfectly secure.
+                            Connect directly with top healthcare professionals, manage your appointments seamlessly, and keep all your medical records perfectly secure.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -143,7 +143,7 @@ export default function Landing() {
 
                         <div className="text-center max-w-2xl mx-auto mb-16">
                             <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-4">Everything you need for better health management</h2>
-                            <p className="text-slate-500 font-medium">Built for both patients and providers to streamline the entire medical journey.</p>
+                            <p className="text-slate-500 font-medium">Built for both patients and doctors to streamline the entire medical journey.</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -153,7 +153,7 @@ export default function Landing() {
                                     <CalendarDays size={28} />
                                 </div>
                                 <h3 className="text-xl font-bold text-slate-900 mb-3">Smart Scheduling</h3>
-                                <p className="text-slate-500 font-medium text-sm leading-relaxed">Book, reschedule, or cancel appointments directly from your dashboard with real-time provider availability.</p>
+                                <p className="text-slate-500 font-medium text-sm leading-relaxed">Book, reschedule, or cancel appointments directly from your dashboard with real-time doctor availability.</p>
                             </div>
 
                             <div className="p-8 rounded-3xl border border-slate-100 bg-slate-50 hover:bg-emerald-50/50 hover:border-emerald-100 hover:shadow-lg hover:shadow-emerald-100/50 transition-all group">
@@ -168,7 +168,7 @@ export default function Landing() {
                                 <div className="w-14 h-14 rounded-2xl bg-white text-slate-900 flex items-center justify-center shadow-sm border border-slate-200 mb-6 group-hover:scale-110 transition-transform">
                                     <Stethoscope size={28} />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3">Provider Access</h3>
+                                <h3 className="text-xl font-bold text-slate-900 mb-3">Healthcare Professional Access</h3>
                                 <p className="text-slate-500 font-medium text-sm leading-relaxed">If you're a doctor, seamlessly manage your availability slots and view your scheduled patient roster.</p>
                             </div>
 

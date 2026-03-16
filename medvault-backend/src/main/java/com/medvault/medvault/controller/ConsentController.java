@@ -29,7 +29,7 @@ public class ConsentController {
             User doctor = userService.findByEmail(principal.getName())
                     .orElseThrow(() -> new Exception("User not found"));
 
-            if (!"PROFESSIONAL".equalsIgnoreCase(doctor.getRole())) {
+            if (!"PROFESSIONAL".equalsIgnoreCase(doctor.getRole()) && !"DOCTOR".equalsIgnoreCase(doctor.getRole())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only professionals can request consent");
             }
 
