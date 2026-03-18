@@ -29,6 +29,7 @@ export default function Dashboard() {
   const [userRole, setUserRole] = useState(initialRole);
   const [isLoading, setIsLoading] = useState(true);
   const [dataTimedOut, setDataTimedOut] = useState(false);
+  const [slowWarning, setSlowWarning] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [appointments, setAppointments] = useState([]);
@@ -81,17 +82,23 @@ export default function Dashboard() {
 
     fetchDashboardData();
 
-    // Safety timeout: If backend hangs for more than 15 seconds, stop buffering
+    // After 3s still loading → show a gentle "server is waking up" hint
+    const slowHintId = setTimeout(() => {
+      if (isMounted) setSlowWarning(true);
+    }, 3000);
+
+    // Hard bail-out after 8s so users aren't stuck forever
     const timeoutId = setTimeout(() => {
-      if (isMounted && isLoading) {
-        console.warn("Dashboard data fetch timed out or took too long");
+      if (isMounted) {
+        console.warn("Dashboard data fetch timed out");
         setDataTimedOut(true);
         setIsLoading(false);
       }
-    }, 15000);
+    }, 8000);
 
     return () => {
       isMounted = false;
+      clearTimeout(slowHintId);
       clearTimeout(timeoutId);
     };
   }, []);
@@ -119,9 +126,16 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 text-center px-6">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600"></div>
-          <p className="text-slate-500 font-medium animate-pulse">Loading dashboard...</p>
+          <p className="text-slate-500 font-medium animate-pulse">Loading dashboard…</p>
+          {slowWarning && (
+            <div className="mt-2 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl max-w-xs">
+              <p className="text-amber-800 text-sm font-semibold">
+                ⏳ The server is waking up — this only happens once and takes ~15 s.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
