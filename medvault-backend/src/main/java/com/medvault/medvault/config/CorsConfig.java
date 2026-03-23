@@ -14,7 +14,7 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173",
-                                "http://127.0.0.1:5174", "https://medivault-zeta.vercel.app") // React Vite ports
+                                "http://127.0.0.1:5174", "https://medivault-zeta.vercel.app", "https://medivaultreal.vercel.app") // React Vite ports
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
