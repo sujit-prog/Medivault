@@ -11,7 +11,7 @@ import java.net.http.HttpResponse;
 @Service
 public class EmailService {
 
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.username:}")
     private String fromEmail;
 
     @Value("${BREVO_API_KEY:}")
